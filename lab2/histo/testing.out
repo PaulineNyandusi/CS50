@@ -1,0 +1,50 @@
+ml () {  module ml "$@"
+}
+module () {  _module_raw "$@" 2>&1
+}
+_module_raw () {  eval `/usr/bin/tclsh8.6 /usr/lib/x86_64-linux-gnu/modulecmd.tcl bash "$@"`;
+ _mlstatus=$?;
+ return $_mlstatus
+}
+
+
+
+#!/bin/bash
+
+echo "3 -4 5 1 7 0 8 0 15 12 3 5 3 3 3 3 3" | ./histo 
+16 bins of size 1 for range [0,16] 
+[ 0: 0] 
+[ 1: 1] *
+[ 2: 2] 
+[ 3: 3] *******
+[ 4: 4] 
+[ 5: 5] **
+[ 6: 6] 
+[ 7: 7] *
+[ 8: 8] *
+[ 9: 9] 
+[10:10] 
+[11:11] 
+[12:12] *
+[13:13] 
+[14:14] 
+[15:15] *
+
+
+# echo "Test 1: Basic test with numbers in range [0, 16)"
+# echo "3 -4 5 1 7 0 8 0 15 12 3 5 3 3 3 3 3" | ./histo
+
+
+# echo "Test 2: Test with numbers just outside the initial range"
+# echo "3 -4 5 1 7 0 8 0 15 12 3 5 18" | ./histo
+
+
+
+
+# echo "Test 4: Test using bash syntax to generate a list of numbers"
+# echo 150 | ./histo
+
+
+# echo "Test 5: A test case with no numbers"
+# echo "" | ./histo
+

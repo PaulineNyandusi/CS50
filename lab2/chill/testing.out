@@ -1,0 +1,100 @@
+ml () {  module ml "$@"
+}
+module () {  _module_raw "$@" 2>&1
+}
+_module_raw () {  eval `/usr/bin/tclsh8.6 /usr/lib/x86_64-linux-gnu/modulecmd.tcl bash "$@"`;
+ _mlstatus=$?;
+ return $_mlstatus
+}
+#!/bin/bash
+#Script name: testing.sh
+#Name : Pauline Nyandusi
+#Date : 26th sept 2023
+#Summary: A bash script that tests chill.c
+
+
+#!/bin/bash
+
+# zero arguments, ensures the programs handles it when no arguments are passed
+./chill
+  Temp  Wind    Chill
+ -----  -----   -----
+-10.0      5.0    -22.3
+-10.0     10.0    -28.3
+-10.0     15.0    -32.2
+
+  0.0      5.0    -10.5
+  0.0     10.0    -15.9
+  0.0     15.0    -19.4
+
+ 10.0      5.0      1.2
+ 10.0     10.0     -3.5
+ 10.0     15.0     -6.6
+
+ 20.0      5.0     13.0
+ 20.0     10.0      8.9
+ 20.0     15.0      6.2
+
+ 30.0      5.0     24.7
+ 30.0     10.0     21.2
+ 30.0     15.0     19.0
+
+ 40.0      5.0     36.5
+ 40.0     10.0     33.6
+ 40.0     15.0     31.8
+
+
+# one argument, a test for only one argument, which is temperature
+./chill 32
+  Temp  Wind    Chill
+ -----  -----   -----
+ 32.0      5.0     27.1
+ 32.0     10.0     23.7
+ 32.0     15.0     21.6
+
+# two arguments, a test for when temp and wing speed are inputs
+
+./chill 32.5 10
+ 32.5     10.0     24.3
+
+# temp out of range, test that checks if the temperature is not out of range
+./chill 55
+Temperature must be less than 50
+
+# wind out of range, for for if the wind is out of range
+./chill 10 0
+Wind velocity must be greater than 0.5 MPH
+
+# negative temperature
+./chill -5 15
+ -5.0     15.0    -25.8
+
+# negative wind speed
+./chill 20 -5
+Wind velocity must be greater than 0.5 MPH
+
+# more than two arguments
+./chill 32 10 50
+usage: Too many arguments
+
+# when its not a digit
+./chill hui
+Incorect Format: Numbers and not characters are required
+
+#temp outt of range and wind in range 
+./chill 68 10
+Temperature must be less than 50
+
+#wind out of range and temp in range
+./chill 23 567
+Wind velocity must be less than 231 MPH
+
+#both out of range
+./chill 53 456
+Wind velocity must be less than 231 MPH
+Temperature must be less than 50
+
+#both out of rangr, lower rfangr
+./chill -254 0
+Wind velocity must be greater than 0.5 MPH
+Temperature must be greater than -99

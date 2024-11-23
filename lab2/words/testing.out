@@ -1,0 +1,202 @@
+ml () {  module ml "$@"
+}
+module () {  _module_raw "$@" 2>&1
+}
+_module_raw () {  eval `/usr/bin/tclsh8.6 /usr/lib/x86_64-linux-gnu/modulecmd.tcl bash "$@"`;
+ _mlstatus=$?;
+ return $_mlstatus
+}
+#!/bin/bash
+#File name: testing.sh
+#Name : Pauline Nyandusi
+#Date : Tuesday sept 26
+#Summary: A bash script that tests words 
+# 
+
+
+# when no arguments are provided
+echo "This is amazing, +i cant wait for @winter term. " | ./words
+This
+is
+amazing
+i
+cant
+wait
+for
+winter
+term
+
+# when one argument is provided
+./words test.txt
+Hello
+File
+two
+words
+with
+special
+characters
+don
+T
+Boy
+dre
+I
+want
+to
+go
+back
+hom
+ee
+I
+need
+to
+see
+my
+mum
+and
+my
+youngest
+sister
+I
+hope
+to
+survive
+this
+sem
+ester
+with
+stem
+classes
+
+
+# when one argument is provided (but it's not valid)
+./words tessst.txt
+Error! Could not open file
+
+#one argument valid, the other argument valid
+./words test.txt test.txt 
+Hello
+File
+two
+words
+with
+special
+characters
+don
+T
+Boy
+dre
+I
+want
+to
+go
+back
+hom
+ee
+I
+need
+to
+see
+my
+mum
+and
+my
+youngest
+sister
+I
+hope
+to
+survive
+this
+sem
+ester
+with
+stem
+classes
+Hello
+File
+two
+words
+with
+special
+characters
+don
+T
+Boy
+dre
+I
+want
+to
+go
+back
+hom
+ee
+I
+need
+to
+see
+my
+mum
+and
+my
+youngest
+sister
+I
+hope
+to
+survive
+this
+sem
+ester
+with
+stem
+classes
+
+#one argument valid , next argument valid
+./words test.txt tesrt.txt 
+Error! Could not open file
+Hello
+File
+two
+words
+with
+special
+characters
+don
+T
+Boy
+dre
+I
+want
+to
+go
+back
+hom
+ee
+I
+need
+to
+see
+my
+mum
+and
+my
+youngest
+sister
+I
+hope
+to
+survive
+this
+sem
+ester
+with
+stem
+classes
+
+#all arguments invalid
+./words testt.txt tesst.txt tesst.txt
+Error! Could not open file
+
+#special file format
+./words '-'
+Error! Could not open file
