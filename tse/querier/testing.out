@@ -1,0 +1,529 @@
+ml () {  module ml "$@"
+}
+module () {  _module_raw "$@" 2>&1
+}
+_module_raw () {  eval `/usr/bin/tclsh8.6 /usr/lib/x86_64-linux-gnu/modulecmd.tcl bash "$@"`;
+ _mlstatus=$?;
+ return $_mlstatus
+}
+#!/bin/bash
+
+# testing.sh
+# Author: Pauline Nyandusi
+# Date: Oct 25, 2023
+# Description: Bash script to test querier.c
+
+echo -e "home" | ./querier ~/cs50-dev/shared/students_files/tse/output/letters-3 ~/cs50-dev/shared/students_files/tse/output/letters-3.index
+Query: home 
+Matches 6 documents (ranked): 
+score:	2 doc	1: http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+score:	1 doc	6: http://cs50tse.cs.dartmouth.edu/tse/letters/C.html
+score:	1 doc	5: http://cs50tse.cs.dartmouth.edu/tse/letters/D.html
+score:	1 doc	4: http://cs50tse.cs.dartmouth.edu/tse/letters/E.html
+score:	1 doc	3: http://cs50tse.cs.dartmouth.edu/tse/letters/B.html
+score:	1 doc	2: http://cs50tse.cs.dartmouth.edu/tse/letters/A.html
+
+
+Query: 
+
+# or at the front
+echo -e "or at the front of the input"
+or at the front of the input
+echo "or" | ./querier ~/cs50-dev/shared/students_files/tse/output/letters-3 ~/cs50-dev/shared/students_files/tse/output/letters-3.index
+Error:  or cannot be at the beginning of the array 
+Query: or 
+
+Query: 
+echo -e "----------------------------------------"
+----------------------------------------
+
+# Testing with wrong use of AND and OR
+# and at the front
+
+echo -e "and at the front of the input"
+and at the front of the input
+echo "and" | ./querier ~/cs50-dev/shared/students_files/tse/output/letters-3 ~/cs50-dev/shared/students_files/tse/output/letters-3.index
+Error:  and cannot be at the beginning of the array 
+Query: and 
+
+Query: 
+echo -e "--------------------------------------"
+--------------------------------------
+
+
+# 'and 'next to 'or' 
+echo -e "and 'next to 'or'"
+and 'next to 'or'
+echo "home and Or playground" | ./querier ~/cs50-dev/shared/students_files/tse/output/letters-3 ~/cs50-dev/shared/students_files/tse/output/letters-3.index
+Query: home and or playground Error: Two adjacent words cannot both be operators ('AND' or 'OR').
+
+
+Query: 
+echo -e "--------------------------------------"
+--------------------------------------
+
+# and at the end
+echo -e "and at the end of the query"
+and at the end of the query
+echo "home And" | ./querier ~/cs50-dev/shared/students_files/tse/output/letters-3 ~/cs50-dev/shared/students_files/tse/output/letters-3.index
+Query: home and Error:  and cannot be at the endof the array 
+
+
+Query: 
+echo -e "-----------------------------------------------"
+-----------------------------------------------
+
+# or at the end
+echo -e " OR at the end of the query"
+ OR at the end of the query
+echo "playground or" | ./querier ~/cs50-dev/shared/students_files/tse/output/letters-3 ~/cs50-dev/shared/students_files/tse/output/letters-3.index
+Query: playground or Error:  or cannot be at the endof the array 
+
+
+Query: 
+echo -e "-----------------------------------------------"
+-----------------------------------------------
+
+# Testing with invalid characters
+echo -e "INVALID CHARACTERS"
+INVALID CHARACTERS
+echo "mum? ``" | ./querier ~/cs50-dev/shared/students_files/tse/output/letters-3 ~/cs50-dev/shared/students_files/tse/output/letters-3.index
+The chjaracter is invalid
+Query: mum? 
+
+Query: 
+echo -e "-----------------------------------------"
+-----------------------------------------
+
+# Testing with valid arguments
+echo -e " VALID ARGUMENTS "
+ VALID ARGUMENTS 
+echo "home And playground" | ./querier ~/cs50-dev/shared/students_files/tse/output/letters-3 ~/cs50-dev/shared/students_files/tse/output/letters-3.index
+Query: home and playground 
+Matches 1 documents (ranked): 
+score:	1 doc	1: http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+
+
+Query: 
+echo -e "-----------------------------------------------"
+-----------------------------------------------
+
+echo "home for" | valgrind ./querier ~/cs50-dev/shared/students_files/tse/output/letters-3 ~/cs50-dev/shared/students_files/tse/output/letters-3.index
+==1593122== Memcheck, a memory error detector
+==1593122== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==1593122== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==1593122== Command: ./querier /thayerfs/home/f006bvq/cs50-dev/shared/students_files/tse/output/letters-3 /thayerfs/home/f006bvq/cs50-dev/shared/students_files/tse/output/letters-3.index
+==1593122== 
+Query: home for 
+Matches 6 documents (ranked): 
+score:	1 doc	6: http://cs50tse.cs.dartmouth.edu/tse/letters/C.html
+score:	1 doc	5: http://cs50tse.cs.dartmouth.edu/tse/letters/D.html
+score:	1 doc	4: http://cs50tse.cs.dartmouth.edu/tse/letters/E.html
+score:	1 doc	3: http://cs50tse.cs.dartmouth.edu/tse/letters/B.html
+score:	1 doc	2: http://cs50tse.cs.dartmouth.edu/tse/letters/A.html
+score:	1 doc	1: http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+
+
+Query: 
+==1593122== 
+==1593122== HEAP SUMMARY:
+==1593122==     in use at exit: 0 bytes in 0 blocks
+==1593122==   total heap usage: 1,039 allocs, 1,039 frees, 92,031 bytes allocated
+==1593122== 
+==1593122== All heap blocks were freed -- no leaks are possible
+==1593122== 
+==1593122== For lists of detected and suppressed errors, rerun with: -s
+==1593122== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+
+
+echo -e "INVALID CHARACTERS"
+INVALID CHARACTERS
+echo "`54`" | ./querier ~/cs50-dev/shared/students_files/tse/output/letters-3 ~/cs50-dev/shared/students_files/tse/output/letters-3.index
+testing.sh: line 53: 54: command not found
+The chjaracter is invalid
+Query: 
+
+Query: 
+echo -e "-----------------------------------------------"
+-----------------------------------------------
+
+
+echo -e "FUZZY QUERRY TEST"
+FUZZY QUERRY TEST
+./fuzzquery ~/cs50-dev/shared/students_files/tse/output/toscrape-2.index 10 0 | ./querier ~/cs50-dev/shared/students_files/tse/output/toscrape-2 ~/cs50-dev/shared/students_files/tse/output/toscrape-2.index
+./fuzzquery: generating 10 queries from 13563 words
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+Query: inthe and quarters 
+
+Query: hangs or visited kahneman or beneath shopping 
+
+Query: nationally holery or predicts 
+
+Query: endlessly axell conduct or christine or curdled or sorbonne 
+
+Query: endowment or cosmic lover sketchbook and priest or bfed 
+
+Query: orientation iceland describe worse or defeating 
+
+Query: clerks 
+
+Query: arnold streusel or braved 
+
+Query: multiplatform 
+
+Query: patience or nightstruck or bowerbird and antoinette and stances 
+
+Query: 
+echo -e "-----------------------------------------------"
+-----------------------------------------------
+
+echo -e "FUZZY QUERRY TEST"
+FUZZY QUERRY TEST
+./fuzzquery ~/cs50-dev/shared/students_files/tse/output/toscrape-2.index 10 0
+./fuzzquery: generating 10 queries from 13563 words
+inthe AND quarters 
+hangs OR visited kahneman OR beneath shopping 
+nationally holery OR predicts 
+endlessly axell conduct OR christine OR curdled OR sorbonne 
+endowment OR cosmic lover sketchbook AND priest OR bfed 
+orientation iceland describe worse OR defeating 
+clerks 
+arnold streusel OR braved 
+multiplatform 
+patience OR nightstruck OR bowerbird AND antoinette AND stances 
+echo -e "---------------------------------------"
+---------------------------------------
+
+./fuzzquery ~/cs50-dev/shared/students_files/tse/output/toscrape-2.index 100 999 | ./querier ~/cs50-dev/shared/students_files/tse/output/toscrape-2 ~/cs50-dev/shared/students_files/tse/output/toscrape-2.index
+./fuzzquery: generating 100 queries from 13563 words
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+Query: mountainside 
+
+Query: contacts 
+
+Query: collected favorites bloods tribune or death 
+
+Query: pact 
+
+Query: adviser and nationally and tradesmen 
+
+Query: gained 
+
+Query: upcoming and greenidge or softness caramel or mountains 
+
+Query: slogs yorkshire criticize 
+
+Query: burns 
+
+Query: merchant moral 
+
+Query: goldberg or still peeved 
+
+Query: size and saying petroleum and savvy peak californian 
+
+Query: asheville and advent hikes or giffin or impromptus and able 
+
+Query: fish daring worked and roving alchemists or newly 
+
+Query: dresser 
+
+Query: snottiest members or forming or skin cyberpunks 
+
+Query: gulf general metrics lunch or recovered or spaces 
+
+Query: cholera or sep bcff postpones attic or equalizes 
+
+Query: program 
+
+Query: overconfidence loose or outrageously dismissed hill 
+
+Query: landscapes 
+
+Query: divert or mythical similarities 
+
+Query: vogons 
+
+Query: separation lunches 
+
+Query: centers 
+
+Query: tiebreakers or meaningful gilded or calorie 
+
+Query: delivery 
+
+Query: roasts or vitro and ali and wanting or emulations or staircases 
+
+Query: tadzhik and andalusia 
+
+Query: weaves formative franks and cofounder loveswept 
+
+Query: slurpee huff kai or target embodied enjoys 
+
+Query: spectacular forgetfulness and distillates or iceberg and zealot 
+
+Query: paperback and corner prescient 
+
+Query: thirtieth or jillian 
+
+Query: forceful had 
+
+Query: hypocrite 
+
+Query: hailed or gardiner 
+
+Query: turning civilian and wasn 
+
+Query: impromptu or realms celaena 
+
+Query: said or hack 
+
+Query: priorities or huntress barneys pansino 
+
+Query: from edf despatching 
+
+Query: furniture files dirt 
+
+Query: dna bestselling 
+
+Query: critically henrietta and tardiest or radium 
+
+Query: rancor 
+
+Query: repelled and coccyxes gaunt and purview 
+
+Query: bring laditan lottery 
+
+Query: egyptian 
+
+Query: alchemists or austen or launch or advance and discovering 
+
+Query: tsukimi dutch or lin or rotten spain callum 
+
+Query: blooded or tale 
+
+Query: commonwealth entering seminal 
+
+Query: uncensored lush or werner 
+
+Query: initializing computer or homeroom listened moderates 
+
+Query: remnant slaves papilla scampi or solidified 
+
+Query: hell agatha boycotting 
+
+Query: upgrading or utopia taxi perceptions or jay syrian 
+
+Query: caf and whistle 
+
+Query: pals hit defiant aerials and headed and gory 
+
+Query: construct or outfit disturbing 
+
+Query: weaves or heroic 
+
+Query: penal hostile or appearing eu shameful and thickens 
+
+Query: georgians and pea or von and daa and awe 
+
+Query: cemetery 
+
+Query: collects and undead capsule and vernacular 
+
+Query: nuking 
+
+Query: heartaches or fiance der or unceremonious vengeance cataloguing 
+
+Query: definitive contributes permanent 
+
+Query: ablaze omnibus pulp tropicana or eighteenth tortured 
+
+Query: babel scene 
+
+Query: perpetrating and conservatives or fashioned ostracism scruffy 
+
+Query: spoiling electoral or kissing or splendored or speak twice 
+
+Query: forensics or toward or turtlenecks 
+
+Query: athletic or beer 
+
+Query: hole uncountable reacher 
+
+Query: oneida and messiness restlessness and intoxication and pangur 
+
+Query: distinctively mechanic and size hunchback brands omega 
+
+Query: horn escapades or traveled 
+
+Query: inspection and conybeare 
+
+Query: quandaries and sat editions and elope 
+
+Query: gasp and iyengar renovating or seems 
+
+Query: amuse partners and suppers 
+
+Query: siberia pattern 
+
+Query: accountants 
+
+Query: encourages lowlier 
+
+Query: science 
+
+Query: gpa ops fault outsize kurds 
+
+Query: wilt infuse 
+
+Query: heartstrings nev or farewell 
+
+Query: cradle 
+
+Query: advancements quantum or hattie alternative and exorsism and cakes 
+
+Query: pasteur and comes and fourteenth or indelible strapped 
+
+Query: teammates mines or nasturtium charm or nationalism wars 
+
+Query: bunnies or uninspired sleuthing baltimore 
+
+Query: lois eeed and bus whether 
+
+Query: set or victoriously or nixon or eruption cleanses or precepts 
+
+Query: threads or confounded fullest and samerachel preciseness 
+
+Query: spurns and marseilles or grievous 
+
+Query: abounds and retains storyteller simonandschuster gently 
+
+Query: 
+
+
+./fuzzquery ~/cs50-dev/shared/students_files/tse/output/toscrape-2.index 5 100 | ./querier ~/cs50-dev/shared/students_files/tse/output/toscrape-2 ~/cs50-dev/shared/students_files/tse/output/toscrape-2.index
+./fuzzquery: generating 5 queries from 13563 words
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+The chjaracter is invalid
+Query: holiest nature and gonna 
+
+Query: orphan sexuality 
+
+Query: champion and freud 
+
+Query: beauty and mires and route or hemmed or institutionalized or ledbetter 
+
+Query: kernel and deb 
+
+Query: 
