@@ -1,0 +1,17 @@
+Successfully created counters1
+
+{4=0,
+ 3=0,
+ 2=0,
+ 1=0}test with nullcounter...
+test with nullcounter and non existence keys...
+test with a negative key...
+
+{4=2,
+ 3=0,
+ 2=0,
+ 1=0}
+count (should be 4) is 1
+
+Counterstest was Successful
+i love cs
